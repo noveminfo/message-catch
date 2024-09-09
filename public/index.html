@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Slack Notifications</title>
+  </head>
+  <body>
+    <h1>Slack Notifications</h1>
+    <div id="notifications"></div>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8000");
+
+      socket.onmessage = function (event) {
+        const slackEvent = JSON.parse(event.data);
+
+        if (slackEvent.type === "event_callback") {
+          const notification = new Notification("New Slack Message", {
+            body: `Message from ${slackEvent.event.user}: ${slackEvent.event.text}`,
+          });
+
+          const notificationDiv = document.getElementById("notifications");
+          const notificationElement = document.createElement("p");
+          console.log("event ", slackEvent.event);
+          notificationElement.textContent = `${slackEvent.event.user}: ${slackEvent.event.text}`;
+          notificationDiv.appendChild(notificationElement);
+
+          if (Notification.permission === "granted") {
+            new Notification("Slack通知", { body: slackEvent.event.text });
+          } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then((permission) => {
+              if (permission === "granted") {
+                new Notification("Slack通知", { body: slackEvent.event.text });
+              }
+            });
+          }
+        }
+      };
+
+      // Request notification permission
+      // if (Notification.permission !== "granted") {
+      //   Notification.requestPermission();
+      // }
+    </script>
+  </body>
+</html>
