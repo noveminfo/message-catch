@@ -21,6 +21,7 @@ app.post("/slack/events", (req, res) => {
     // Handle the event and send to connected clients
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
+        // console.log("backend event", event);
         client.send(JSON.stringify(event));
       }
     });

@@ -10,7 +10,9 @@
     <div id="notifications"></div>
 
     <script>
-      const socket = new WebSocket("ws://localhost:8000");
+      const socket = new WebSocket(
+        "ws://message-catch-production.up.railway.app"
+      );
 
       socket.onmessage = function (event) {
         const slackEvent = JSON.parse(event.data);
